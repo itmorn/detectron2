@@ -35,8 +35,8 @@ MODEL:
     POOLER_RESOLUTION: 14
 
 DATASETS:
-  TRAIN: ("train",)
-  TEST: ("val",)
+  TRAIN: ("idcard_train",)
+  TEST: ("idcard_val",)
 SOLVER:
   IMS_PER_BATCH: 16
   BASE_LR: 0.02
@@ -45,4 +45,5 @@ SOLVER:
   CHECKPOINT_PERIOD: 500
 INPUT:
   MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
+  RANDOM_FLIP: "none"
 VERSION: 2

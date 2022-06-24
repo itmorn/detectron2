@@ -37,8 +37,13 @@ from detectron2.evaluation import (
     verify_results,
 )
 from detectron2.modeling import GeneralizedRCNNWithTTA
-
-
+from projects.PointSup.point_sup.register_point_annotations import register_coco_instances_with_points
+register_coco_instances_with_points("idcard_train",{},
+                                        "datasets/idcard_coco/cocome/annotations/instance_train.json",
+                                        "datasets/idcard_coco/cocome/train")
+register_coco_instances_with_points("idcard_val",{},
+                                    "datasets/idcard_coco/cocome/annotations/instance_val.json",
+                                    "datasets/idcard_coco/cocome/val")
 def build_evaluator(cfg, dataset_name, output_folder=None):
     """
     Create evaluator(s) for a given dataset.
