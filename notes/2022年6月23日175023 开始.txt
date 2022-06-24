@@ -1,0 +1,48 @@
+https://detectron2.readthedocs.io/en/latest/tutorials/getting_started.html
+https://detectron2.readthedocs.io/en/latest/modules/config.html#config-references
+
+开始  推理
+cd demo/
+python demo.py
+--config-file
+../configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml
+--input
+000000014439.jpg
+000000570688.jpg
+--output
+output/
+--opts
+MODEL.WEIGHTS
+detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
+
+训练
+使用datasets/prepare_for_tests.sh 下载一个coco小数据集
+cd tools/
+./train_net.py
+
+--config-file
+configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml
+--num-gpus
+1
+SOLVER.IMS_PER_BATCH
+2
+SOLVER.BASE_LR
+0.0025
+SOLVER.CHECKPOINT_PERIOD
+500
+
+
+推理
+cd demo/
+python demo.py
+
+--config-file
+../configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml
+--input
+000000014439.jpg
+000000570688.jpg
+--output
+output/
+--opts
+MODEL.WEIGHTS
+../output/model_0005499.pth
