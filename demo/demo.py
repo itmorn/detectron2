@@ -13,6 +13,7 @@ import tqdm
 from detectron2.config import get_cfg
 from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
+from utils import util_idcard
 
 from predictor import VisualizationDemo
 
@@ -128,6 +129,7 @@ if __name__ == "__main__":
                     assert len(args.input) == 1, "Please specify a directory with args.output"
                     out_filename = args.output
                 visualized_output.save(out_filename)
+                util_idcard.save_labelme(predictions,out_filename)
             else:
                 cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
                 cv2.imshow(WINDOW_NAME, visualized_output.get_image()[:, :, ::-1])

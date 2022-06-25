@@ -31,6 +31,7 @@ cd tools/
 configs/COCO-Detection/faster_rcnn_R_50_FPN_1x_idcard.yaml
 --num-gpus
 2
+--resume
 SOLVER.IMS_PER_BATCH
 4
 SOLVER.BASE_LR
@@ -57,9 +58,9 @@ python demo.py
 --config-file
 configs/COCO-Detection/faster_rcnn_R_50_FPN_1x_idcard.yaml
 --input
-/data01/zhaoyichen/data/ec-gpaas-idcard-check/idcard2/*.jpg
+/data01/zhaoyichen/data/ec-gpaas-idcard-check/idcard_301-tail/*.jpg
 --output
 output/idcard/pic/
 --opts
 MODEL.WEIGHTS
-output/idcard/model_0009999.pth
+output/idcard/model_0023999.pth
