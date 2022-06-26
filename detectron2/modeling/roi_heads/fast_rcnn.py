@@ -476,6 +476,8 @@ class FastRCNNOutputLayers(nn.Module):
         boxes = self.predict_boxes(predictions, proposals)
         scores = self.predict_probs(predictions, proposals)
         image_shapes = [x.image_size for x in proposals]
+        self.test_score_thresh = 0
+        self.test_topk_per_image = 1000
         return fast_rcnn_inference(
             boxes,
             scores,

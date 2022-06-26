@@ -37,13 +37,20 @@ from detectron2.evaluation import (
     verify_results,
 )
 from detectron2.modeling import GeneralizedRCNNWithTTA
+from detectron2.structures import BoxMode
+from detectron2.data import build_detection_train_loader, DatasetMapper
 from projects.PointSup.point_sup.register_point_annotations import register_coco_instances_with_points
-register_coco_instances_with_points("idcard_train",{},
-                                        "datasets/idcard_coco/cocome/annotations/instance_train.json",
-                                        "datasets/idcard_coco/cocome/train")
-register_coco_instances_with_points("idcard_val",{},
+from detectron2.data.transforms import augmentation
+import detectron2.data.transforms as T
+
+register_coco_instances_with_points("idcard_train", {},
+                                    "datasets/idcard_coco/cocome/annotations/instance_train.json",
+                                    "datasets/idcard_coco/cocome/train")
+register_coco_instances_with_points("idcard_val", {},
                                     "datasets/idcard_coco/cocome/annotations/instance_val.json",
                                     "datasets/idcard_coco/cocome/val")
+
+
 def build_evaluator(cfg, dataset_name, output_folder=None):
     """
     Create evaluator(s) for a given dataset.
@@ -84,6 +91,30 @@ def build_evaluator(cfg, dataset_name, output_folder=None):
     return DatasetEvaluators(evaluator_list)
 
 
+def build_detection_train_aug(cfg):
+    augs = [
+        T.ResizeShortestEdge(
+            cfg.INPUT.MIN_SIZE_TRAIN, cfg.INPUT.MAX_SIZE_TRAIN, cfg.INPUT.MIN_SIZE_TRAIN_SAMPLING
+        ),
+        T.RandomCrop(crop_type="relative", crop_size=(0.9, 0.9)),
+        T.RandomRotation(angle=[0,359]),
+        T.RandomBrightness(0.9,1.1),
+        T.RandomContrast(0.9,1.1),
+        T.RandomSaturation(0.9,1.1),
+    ]
+    # if cfg.INPUT.CROP.ENABLED:
+    #     augs.append(
+    #         T.RandomCrop_CategoryAreaConstraint(
+    #             cfg.INPUT.CROP.TYPE,
+    #             cfg.INPUT.CROP.SIZE,
+    #             cfg.INPUT.CROP.SINGLE_CATEGORY_MAX_AREA,
+    #             cfg.MODEL.SEM_SEG_HEAD.IGNORE_VALUE,
+    #         )
+    #     )
+    # augs.append(T.RandomFlip())
+    return augs
+
+
 class Trainer(DefaultTrainer):
     """
     We use the "DefaultTrainer" which contains pre-defined default logic for
@@ -95,6 +126,18 @@ class Trainer(DefaultTrainer):
     @classmethod
     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
         return build_evaluator(cfg, dataset_name, output_folder)
+
+    @classmethod
+    def build_train_loader(cls, cfg):
+        """
+        Returns:
+            iterable
+
+        It now calls :func:`detectron2.data.build_detection_train_loader`.
+        Overwrite it if you'd like a different data loader.
+        """
+        mapper = DatasetMapper(cfg, is_train=True, augmentations=build_detection_train_aug(cfg))
+        return build_detection_train_loader(cfg, mapper=mapper)  #
 
     @classmethod
     def test_with_TTA(cls, cfg, model):
